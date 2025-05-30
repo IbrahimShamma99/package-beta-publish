@@ -1,0 +1,43 @@
+name: Publish Package with SHA Metadata
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+
+      - run: npm ci
+
+      - name: Inject +SHA version temporarily
+        run: |
+          ORIG_VERSION=$(node -p "require('./package.json').version")
+          echo "ORIG_VERSION=$ORIG_VERSION" >> $GITHUB_ENV
+
+          SHA=$(git rev-parse --short HEAD)
+          TMP_VERSION="${ORIG_VERSION}+${SHA}"
+
+          cp package.json package.json.bak
+
+          # Overwrite version temporarily
+          jq --arg v "$TMP_VERSION" '.version = $v' package.json > tmp.json && mv tmp.json package.json
+
+      - name: Publish with SHA tag
+        run: |
+          TAG="sha-$(git rev-parse --short HEAD)"
+          npm publish --tag "$TAG"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Restore original package.json
+        run: mv package.json.bak package.json
