@@ -20,8 +20,6 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org/
 
-      - run: npm ci
-
       - name: Inject +SHA version temporarily
         run: |
           ORIG_VERSION=$(node -p "require('./package.json').version")
