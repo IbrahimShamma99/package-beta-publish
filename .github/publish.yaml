@@ -14,10 +14,9 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           registry-url: https://registry.npmjs.org/
 
-      - run: npm ci
 
       - name: Inject +SHA version temporarily
         run: |
@@ -29,7 +28,6 @@ jobs:
 
           cp package.json package.json.bak
 
-          # Overwrite version temporarily
           jq --arg v "$TMP_VERSION" '.version = $v' package.json > tmp.json && mv tmp.json package.json
 
       - name: Publish with SHA tag
