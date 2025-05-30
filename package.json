@@ -1,6 +1,6 @@
 {
   "name": "package-beta-publish",
-  "version": "1.0.0",
+  "version": "1.0.0-bb96f3b",
   "main": "index.js",
   "author": "",
   "license": "ISC",
