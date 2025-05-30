@@ -29,7 +29,9 @@ jobs:
           echo "ORIG_VERSION=$ORIG_VERSION" >> $GITHUB_ENV
 
           SHA=$(git rev-parse --short HEAD)
-          TMP_VERSION="${ORIG_VERSION}+${SHA}"
+          TMP_VERSION="${ORIG_VERSION}-${SHA}"
+
+          npm version "$TMP_VERSION" --no-git-tag-version
 
           cp package.json package.json.bak
 
@@ -37,8 +39,7 @@ jobs:
 
       - name: Publish with SHA tag
         run: |
-          TAG="sha-$(git rev-parse --short HEAD)"
-          npm publish --tag "$TAG"
+          npm publish --tag beta
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
